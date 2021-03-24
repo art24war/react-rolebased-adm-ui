@@ -105,7 +105,8 @@ const Register = (props) => {
         login :username, 
         comment: comment, 
         password: password,
-        userType: 99
+        userType: 99,
+        dealerId: 1
       }, { headers: authHeader() }).then(
         (response) => {
           setMessage(response.data.message);

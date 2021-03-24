@@ -44,7 +44,7 @@ const BoardAdmin = () => {
         <button className="btn btn-default" onClick={ loadData }>reload</button>
         <button className="btn btn-default" onClick={ addNew }>+</button>
       </header>
-      <content><UsersTable refresh = {refresh}/></content>      
+      <div className="table_content"><UsersTable refresh = {refresh}/></div>      
     </div>
   );
 };
