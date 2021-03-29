@@ -6,8 +6,8 @@ const register = (user, headers) => {
   return axios.post(API_URL + "register", user, headers);
 };
 
-const login = (login, password) => {
-  return axios
+const login = async (login, password) => {
+  return await axios
     .post(API_URL + "login", {
       login,
       password,
@@ -21,9 +21,29 @@ const login = (login, password) => {
     });
 };
 
+export const refreshAuth = async () => {
+  var userData = JSON.parse(localStorage.getItem("user"));
+  if(userData == null)
+    return Promise.reject({status: 401});
+  return axios.post(API_URL + "login", {
+    mode: "refresh",
+    refreshToken : userData.refreshToken
+  }).then(async (response) => {
+    if(response.data){
+      localStorage.setItem("user", JSON.stringify(response.data));
+    };
+    return Promise.resolve(response);
+  }).catch( async (error) => {
+    console.log('unauthorized, logging out ...');  
+    console.log(getCurrentUser());     
+    logout();
+    window.location ="/login?return="+ window.location.pathname;   
+    return Promise.reject(error);
+  });
+};
+
 const logout = () => {
-  localStorage.removeItem("user");
-  
+  localStorage.removeItem("user");  
 };
 
 const getCurrentUser = () => {
@@ -50,5 +70,6 @@ export default {
   login,
   logout,
   getCurrentUser,
-  userIsAdmin
+  userIsAdmin,
+  userIsManager
 };

@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import "./App.css";
 
-import AuthService from "./services/auth.service";
+import AuthService, { refreshAuth } from "./services/auth.service";
 
 import Login from "./components/LoginForm";
 import Register from "./components/Register";
@@ -28,6 +28,7 @@ const App = (props) => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [history, setHistory] = useState(useHistory());
   const [location, setLocation] = useState(useLocation());
+  const [authFailCount, setAuthFailCount] = useState(0);
   
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -44,17 +45,17 @@ const App = (props) => {
   };
   
   //we analyZe all of responses here and then autenticate user after checks of identity   
-  axios.interceptors.response.use((response) => {
-    return response;
-  }, function (error) {
-     if (error.response && error.response.status === 401) {
-        console.log('unauthorized, logging out ...');
-        AuthService.logout();
-        setCurrentUser(undefined);
-        history.push("/login?return="+ location.pathname);   
-    }
-    return Promise.reject(error);
-});
+  /*  axios.interceptors.response.use((response) => {
+      if(authFailCount > 0)
+        setAuthFailCount(0);
+      return response;
+    }, function (error) {
+        if (error.response && error.response.status === 401) {
+          
+      }
+      return Promise.reject(error);
+  });
+  */
 
   return (
     <div>

@@ -1,27 +1,41 @@
 import axios from "axios";
 import authHeader from "./auth.header";
+import { refreshAuth } from "./auth.service"
 
-const API_URL = process.env.REACT_APP_USER_API_URL + "test/";
+const API_URL_TEST = process.env.REACT_APP_USER_API_URL + "test/";
 const urlGetUsers = process.env.REACT_APP_USER_API_URL + 'users/list';
 
-const getPublicContent = () => {
-  return axios.get(API_URL + "all");
+const refreshAuthCallback = async (error, callback, retry) => { 
+  if(error.response.status == 401 && retry == undefined){
+    return refreshAuth().then(async () => {
+      return Promise.resolve(await callback(true));  
+    });        
+  };
+  return Promise.reject(error);
+}
+
+const getPublicContent = async () => {
+  return await axios.get(API_URL_TEST + "all");
 };
 
-const getUserBoard = () => {
-  return axios.get(API_URL + "user", { headers: authHeader() });
+const getUserBoard = async (retry) => {
+  return await axios.get(API_URL_TEST + "user", { headers: authHeader() })
+    .catch((error) => refreshAuthCallback(error, getUserBoard, retry));
 };
 
-const getManagerBoard = () => {
-  return axios.get(API_URL + "man", { headers: authHeader() });
+const getManagerBoard = async (retry) => {
+  return await axios.get(API_URL_TEST + "man", { headers: authHeader() })
+    .catch((error) => refreshAuthCallback(error, getManagerBoard, retry));
 };
 
-const getAdminBoard = () => {
-  return axios.get(API_URL + "admin", { headers: authHeader() });
+const getAdminBoard = async (retry) => {
+  return await axios.get(API_URL_TEST + "admin", { headers: authHeader() })
+  .catch((error) => refreshAuthCallback(error, getAdminBoard, retry));
 };
 
-const getAllUsersList = () => {
-  return axios.post(urlGetUsers, {}, { headers: authHeader() });
+const getAllUsersList = async (retry) => {
+  return await axios.post(urlGetUsers, {}, { headers: authHeader() })
+  .catch((error) => refreshAuthCallback(error, getAllUsersList, retry));
 }
 
 export default {

@@ -5,6 +5,7 @@ import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import UserService  from "../services/user.service";
 import { useContextMenu } from 'react-contexify';
 import UsersContextMenu  from '../components/UsersContextMenu';
+import {promiseState}  from '../helpers/promiseState'
 
 const hasNoUsers = ()=> {
   return ("No users available");
@@ -34,9 +35,8 @@ const UsersTable = (props) => {
   const[refresh, setRefresh] = useState(props.refresh);
   
   const reloadTable = () => {
-      if(currentRequest != null)
+      if(currentRequest != null && promiseState(currentRequest) == 'pending')
       {
-        debugger
         currentRequest.constructor.reject();
         setRequest(null);
       }
@@ -44,7 +44,7 @@ const UsersTable = (props) => {
       setRequest(request);
       request.then(function(response){
         setUsers(response.data);
-        return Promise.resolve();
+        return Promise.resolve(response.data);
       });
     }
   
