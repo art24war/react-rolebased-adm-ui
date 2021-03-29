@@ -14,10 +14,6 @@ const BoardAdmin = () => {
         setContent(response.data);
       },
       (error) => {
-        if(error.status == 401)
-        {
-          history.push("/login");
-        }
         const _content =
           (error.response &&
             error.response.data &&
@@ -25,7 +21,7 @@ const BoardAdmin = () => {
           error.message ||
           error.toString();
 
-        setContent(_content);
+        console.log(_content);
       }
     );
   }, []);
