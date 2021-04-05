@@ -24,7 +24,7 @@ const login = async (login, password) => {
 export const refreshAuth = async () => {
   var userData = JSON.parse(localStorage.getItem("user"));
   if(userData == null)
-    return Promise.reject({status: 401});
+    return Promise.reject({status: 401, message: "Login failed"});
   return axios.post(API_URL + "login", {
     mode: "refresh",
     refreshToken : userData.refreshToken
