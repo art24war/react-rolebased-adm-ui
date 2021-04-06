@@ -1,4 +1,5 @@
 import axios from "axios";
+import {promiseState} from "../helpers/promiseState"
 
 const API_URL = process.env.REACT_APP_USER_API_URL+"users/";
 
@@ -21,13 +22,15 @@ const login = async (login, password) => {
     });
 };
 
+let currentLoginRefresh = null;
 export const refreshAuth = async () => {
-  var userData = JSON.parse(localStorage.getItem("user"));
+  var userData = getCurrentUser();
   if(userData == null)
     return Promise.reject({status: 401, message: "Login failed"});
-  return axios.post(API_URL + "login", {
+  if(currentLoginRefresh == null || promiseState(currentLoginRefresh) != "pending")
+   currentLoginRefresh = axios.post(API_URL + "login", {
     mode: "refresh",
-    refreshToken : userData.refreshToken
+    refreshToken : getCurrentUser().refreshToken
   }).then(async (response) => {
     if(response.data){
       localStorage.setItem("user", JSON.stringify(response.data));
@@ -40,6 +43,7 @@ export const refreshAuth = async () => {
     window.location ="/login?return="+ window.location.pathname;   
     return Promise.reject(error);
   });
+  return await currentLoginRefresh;
 };
 
 const logout = () => {

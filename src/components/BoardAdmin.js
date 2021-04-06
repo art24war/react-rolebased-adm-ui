@@ -22,6 +22,7 @@ const BoardAdmin = () => {
           error.toString();
 
         console.log(_content);
+        setContent(_content);
       }
     );
   }, []);
